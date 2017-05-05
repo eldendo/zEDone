@@ -1,6 +1,15 @@
+(************************************************
+* zEDone Virtual Computer V1.1 DEV              *
+* copyright (c) 2012,2017 by ir. Marc Dendooven *
+* zEDone is a virtual CP/M machine              *
+* using my Z80 emulator (zED80)                 *
+* (zED80 is still under construction)           *
+* **********************************************)
+
+
 program zEDone;
 
-uses zED80, crt, math;
+uses zED80, crt, math, sysUtils;
 
 const	NrDr = 4;// number of drives 
 		// if NrDr is changed, DriveNames should be added/removed and the BIOS should be adapted. 
@@ -102,7 +111,9 @@ end;
 procedure output(Port:word; Value:byte);
 begin
 	case lo(port) of 
-		0: write(chr(Value));
+		0: begin
+			if value = 0 then writeln ('*** debug ***') else write(chr(Value));
+		   end; 
 		$10: driveNr := Value;
 		$11: track := Value;
 		$12: sector := Value;
@@ -113,31 +124,36 @@ begin
 end;
 
 
+
+
 function input(Port:word):byte;
 var key: integer;
 begin
 	case lo(port) of
 		0: if keypressed then begin 
-			//InZ80 := ord(readkey);
-			key := ord(readkey);
+			//input := ord(readkey);
+			key := ord(readkey); //if key=13 then step:=true;
 			if key = 0 then //not an ascii characters
-					if ord(readkey) = 66 then exit;
+					if ord(readkey) = 66 then key:=254; //exit; !!! DEBUG !
 					//press F8 to exit
 			input := key
 		    end;	  
-		1: if keypressed then input := $FF else input := 0;
+		1: begin sleep(1); if keypressed then input := $FF else input := 0 end;
 		else input := 255
-	end
+	end;
 end;
 
-	
+procedure user;
+begin
+    writeln;writeln;writeln('WARM BOOT');load_prg('CPM22',$DC00);
+end;	
 
 begin
 	writeln;
 	writeln('***********************************************');
-	writeln('* Welcome to zEDone emulator. V1.0 DEV        *');
+	writeln('* Welcome to zEDone emulator. V1.1 DEV        *');
 	writeln('* (C)2012-2017 by ir. Marc Dendooven          *');
-	writeln('* consult READ.ME for more information        *'); 
+//	writeln('* consult READ.ME for more information        *'); 
 	writeln('***********************************************');
 	writeln;		
 	writeln('push F8 on command line to exit');
@@ -149,10 +165,9 @@ begin
 			assign(drive[i],driveName[i]); // a file named driveA..driveD should exist. 
 			Reset(drive[i]) // blocksize default 128
 		end;
-			
 	load_prg('CPM22',$DC00);
 	load_prg('edBIOS',$F200);
 	addFile;
-	runZED80($F200, 0, @peek, @input, @poke, @output)
+	runZED80($F200, 0, @peek, @input, @poke, @output, @user)
 
 end.
