@@ -1,0 +1,83 @@
+************************************************************************
+* zEDone emulator READ.ME file                                         *
+* (C)2012 by ir. Marc Dendooven                                        *
+************************************************************************
+
+Files in this distribution.
+---------------------------
+1.zEDone or zEDone.exe : executable
+2.CPM22 : CP/M 2.2 (operating system)
+3.edBIOS : BIOS for the zEDone
+4.driveA : image of drive A
+5.driveB : image of drive B
+6.driveC : image of drive C
+7.driveD : image of drive D
+8.emptyDisk : an empty disk image
+9.READ.ME : this file
+
+files 1 to 7 MUST BE PRESENT IN THE SAME (CURRENT) DIRECTORY
+
+
+Instructions
+------------
+inserting a new disk in a drive is done by copying a diskimage to a drive.
+the content of that drive WILL BE OVERWRITTEN so do not forget to backup !
+
+a lot of CP/M software can be found on the internet.
+on startup the emulator can import a file from your host computer.
+it will be loaded in transient memory (starting at address 100hex)
+then you can save it using the CP/M save command. 
+
+Known problems
+--------------
+- Emulator takes 100% of one CPU. Emulator is too fast. 
+	>>> solution: count cycles and give time back to cpu (later version)
+- Emulator crashes after exiting Turbo Pascal
+	>>> reason: unknown
+	>>> workaround: do a (second) warm boot by pressing CNTL-C after leaving turbo
+- Turbo pascal installer (TINST) won't start (unwanted change of drive and user)
+	>>> reason: unknown
+	>>> workaround : start Turbo, exit, CNTL-C, start TINST
+- imported file from host computer should be read/write.
+	>>> reason: probably place of filemode=2 too early. 
+	>>> solution: load file before filemode=2 or open/close for each block read/write.
+	>>> workaround: set file als readable and writable
+- crash if imported file too big.
+	>>> reason: file may not overwrite ccp (ccp needed for save command)
+	>>> solution: create/find a tool for converting files to cp/m floppie images.
+
+to do
+-----
+- solve problems 
+- finish edbios
+- store cp/m and bios on disk
+- write a bootloader
+- make a windows version
+- write Z80 emulator to be independend >>> gpl
+- write a more userfriendly version (gui/tui for selecting disks, import files, etc...) 
+  
+
+About the zED project
+---------------------
+zED computers are a series of computers based on the ZILOG Z80 processor.
+These will be build in FPGA and/or be emulated in software.
+FPGA versions will use the opencore T80 processor by Daniel Wallner.
+Emulated versions will use the Z80 emulator by Marat Fayzullin.
+
+The goal of the project is part educational, part nostalgia:
+As an instructor in computer architecture, I find modern computers too complex to teach basic principles.
+So I decided to make some simple teaching models. 
+Problem with these is that system software must be written for them and this takes too much time.
+Better is to construct a simple computer based on an existing processor for which a lot of software exists.
+The Z80 is a simple enough processor wich is still in use and well documented.
+There is a lot of system software (including a simple but powerfull OS: CP/M). 
+And for the nostalgic part: the Z80 was the processor in my first computer a Sinclair ZX81.
+
+The first computer in the zED serie is the zEDzero.
+It is just a Z80 combined with ram and/or rom and character I/O.
+
+About the zEDone
+----------------
+For the moment there is only an emulator version.
+The zEDone is a Z80 with 64K ram, character I/O and a controller for 4 (or more) disk drives.
+The current version loads CP/M 2.2 and edBIOS in memory and starts execution.
